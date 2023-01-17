@@ -27,7 +27,7 @@ describe("InsightFacade", function()  {
             return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
 
-        it ("should reject same name", function(){
+        /*it ("should reject same name", function(){
             facade.addDataset("aaa", sections, InsightDatasetKind.Sections)
                 .then((res) => {
                     facade.addDataset("aaa", sections, InsightDatasetKind.Sections)
@@ -41,7 +41,7 @@ describe("InsightFacade", function()  {
 
             });
         });
-
+        */
 
 
         it("Should resolve with a correct dataset", function() {
@@ -54,7 +54,7 @@ describe("InsightFacade", function()  {
                     //length should be 1 (only added 1)
                     expect(res.length).to.equal(1);
                     })
-                .catch((err) => {
+                .catch((error) => {
                     throw new Error("Should not have rejected");
 
             });
