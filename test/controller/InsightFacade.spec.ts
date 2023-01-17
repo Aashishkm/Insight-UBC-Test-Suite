@@ -51,11 +51,11 @@ describe("InsightFacade", function()  {
                     expect(res).to.deep.equal(["Course"]);
                     //should be an array
                     expect(res).to.be.an.instanceof(Array);
-                    //length should be 1 (only added 1)
+                    //length should be 1 (only added 1 dataset)
                     expect(res.length).to.equal(1);
                     })
                 .catch((error) => {
-                    throw new Error("Should not have rejected");
+                    expect.fail("shouldn't end up here")
 
             });
         });
