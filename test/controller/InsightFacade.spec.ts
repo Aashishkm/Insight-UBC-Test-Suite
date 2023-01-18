@@ -46,16 +46,45 @@ describe("InsightFacade", function()  {
             return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
 
-        it("should reject content that is not a zip file", function() {
-            const result = facade.addDataset("test", "Randomstringggg", InsightDatasetKind.Sections)
+        it("should reject content that is not a zip file without courses folder", function() {
+            const result = facade.addDataset("nonzip", "Randomstringggg", InsightDatasetKind.Sections)
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
+        it("should reject an empty zip file", function() {
+            let empty: string;
+            empty = getContentFromArchives("empty.zip");
+            const result = facade.addDataset("empty-zip", empty, InsightDatasetKind.Sections)
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
+        it("should reject an empty zip file with a courses folder", function() {
+            let empty2: string;
+            empty2 = getContentFromArchives("emptywithcourses.zip");
+            const result = facade.addDataset("empty-zip", empty2, InsightDatasetKind.Sections)
             return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
 
         it("should reject the wrong InsightDatasetKind ", function() {
-            const result = facade.addDataset("test", sections, InsightDatasetKind.Rooms)
+
+            const result = facade.addDataset("wrongdatasetkind", sections, InsightDatasetKind.Rooms)
             return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
 
+        it("should reject a dataset with invalidJSON", function() {
+            let bad: string;
+            bad = getContentFromArchives("badjson.zip");
+
+            const result = facade.addDataset("badjson", bad, InsightDatasetKind.Sections)
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
+        it("should reject a dataset with no sections", function() {
+            let nosections: string;
+            nosections = getContentFromArchives("Nosections.zip");
+            const result = facade.addDataset("nosections", nosections, InsightDatasetKind.Sections)
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
 
 
         it("Should resolve with a correct dataset", function() {
@@ -73,5 +102,10 @@ describe("InsightFacade", function()  {
 
             });
         });
+
+    });
+
+    describe("removeDataset", function() {
+        it()
     });
 });
