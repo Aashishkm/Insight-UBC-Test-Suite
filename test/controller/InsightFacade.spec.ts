@@ -146,4 +146,19 @@ describe("InsightFacade", function()  {
         });
 
     });
+
+    describe("listDataset", function() {
+        it("should list an empty dataset", function() {
+            const result = facade.listDatasets()
+            return expect(result).to.deep.equal([]);
+        });
+
+        it("should list a dataset with stuff in it", function() {
+            return facade.addDataset("ab", sections, InsightDatasetKind.Sections)
+                .then(() => {
+                    const result = facade.listDatasets()
+                    expect(result).to.deep.equal(["ab"]);
+                });
+        });
+    });
 });
