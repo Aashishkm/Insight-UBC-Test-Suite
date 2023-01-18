@@ -30,7 +30,7 @@ describe("InsightFacade", function()  {
         it ("should reject same name", function(){
              const result = facade.addDataset("aaa", sections, InsightDatasetKind.Sections)
                 .then(() => {
-                    facade.addDataset("aaa", sections, InsightDatasetKind.Sections)
+                    return facade.addDataset("aaa", sections, InsightDatasetKind.Sections)
                 })
                 return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
@@ -106,7 +106,7 @@ describe("InsightFacade", function()  {
     });
 
     describe("removeDataset", function() {
-        it ("should reject an empty dataset id", function() {
+        it ("should reject a dataset id that is empty", function() {
             const result = facade.removeDataset("")
             return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
@@ -126,10 +126,6 @@ describe("InsightFacade", function()  {
             return expect(result).to.eventually.be.rejectedWith(NotFoundError);
         });
 
-        it ("should reject a dataset that doesn't exist", function() {
-            const result = facade.removeDataset("random")
-            return expect(result).to.eventually.be.rejectedWith(NotFoundError);
-        });
 
         it ("should successfully remove a dataset that is already added", function() {
             return facade.addDataset("ab", sections, InsightDatasetKind.Sections)
@@ -138,7 +134,8 @@ describe("InsightFacade", function()  {
                     return facade.removeDataset("ab");
                 })
                 .then((res) => {
-                    expect(res).to.deep.equal([]);
+                    //check assertion for string
+                    expect(res).to.deep.equal("ab");
                 })
                 .catch((error) => {
                     expect.fail("should have accepted!")
@@ -160,7 +157,7 @@ describe("InsightFacade", function()  {
 
             const dataset = await facade.listDatasets();
 
-            expect(dataset).to.deep.equal([{id: "ab", kind: InsightDatasetKind, numRows: 64612}])
+            expect(dataset).to.deep.equal([{id: "ab", kind: InsightDatasetKind.Sections, numRows: 64612}])
         });
     });
 });
