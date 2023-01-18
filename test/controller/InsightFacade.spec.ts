@@ -135,7 +135,7 @@ describe("InsightFacade", function()  {
                 })
                 .then((res) => {
                     //check assertion for string
-                    expect(res).to.deep.equal("ab");
+                    expect(res).to.equal("ab");
                 })
                 .catch((error) => {
                     expect.fail("should have accepted!")
