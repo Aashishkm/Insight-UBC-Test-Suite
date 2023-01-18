@@ -148,17 +148,19 @@ describe("InsightFacade", function()  {
     });
 
     describe("listDataset", function() {
-        it("should list an empty dataset", function() {
-            const result = facade.listDatasets()
-            return expect(result).to.deep.equal([]);
+        it("should list an empty dataset", async function() {
+            const dataset = await facade.listDatasets()
+            expect(dataset).to.deep.equal([])
+
+
         });
 
-        it("should list a dataset with stuff in it", function() {
-            return facade.addDataset("ab", sections, InsightDatasetKind.Sections)
-                .then(() => {
-                    const result = facade.listDatasets()
-                    expect(result).to.deep.equal(["ab"]);
-                });
+        it("should list a dataset with stuff in it", async function() {
+            await facade.addDataset("ab", sections, InsightDatasetKind.Sections)
+
+            const dataset = await facade.listDatasets();
+
+            expect(dataset).to.deep.equal([{id: "ab", kind: InsightDatasetKind, numRows: 64612}])
         });
     });
 });
