@@ -1,6 +1,6 @@
 import InsightFacade from "../../src/controller/InsightFacade";
 import {clearDisk, getContentFromArchives} from "../resources/archives/TestUtil";
-import {InsightDatasetKind, InsightError} from "../../src/controller/IInsightFacade";
+import {InsightDatasetKind, InsightError, NotFoundError} from "../../src/controller/IInsightFacade";
 import chai, {expect} from "chai";
 import chaiAsPromised = require("chai-as-promised");
 
@@ -89,13 +89,13 @@ describe("InsightFacade", function()  {
 
         it("Should resolve with a correct dataset", function() {
             return facade.addDataset("testing", sections, InsightDatasetKind.Sections)
-                .then((res) => {
+                .then((result) => {
                     //result should be the name of the id
-                    expect(res).to.deep.equal(["testing"]);
+                    expect(result).to.deep.equal(["testing"]);
                     //should be an array
-                    expect(res).to.be.an.instanceof(Array);
+                    expect(result).to.be.an.instanceof(Array);
                     //length should be 1 (only added 1 dataset)
-                    expect(res.length).to.equal(1);
+                    expect(result.length).to.equal(1);
                     })
                 .catch((error) => {
                     expect.fail("shouldn't end up here")
@@ -106,6 +106,44 @@ describe("InsightFacade", function()  {
     });
 
     describe("removeDataset", function() {
-        it()
+        it ("should reject an empty dataset id", function() {
+            const result = facade.removeDataset("")
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
+        it ("should reject a dataset with an underscore", function() {
+            const result = facade.removeDataset("a_b")
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
+        it ("should reject a dataset with only whitespace", function() {
+            const result = facade.removeDataset(" ")
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
+        it ("should reject a dataset that doesn't exist", function() {
+            const result = facade.removeDataset("random")
+            return expect(result).to.eventually.be.rejectedWith(NotFoundError);
+        });
+
+        it ("should reject a dataset that doesn't exist", function() {
+            const result = facade.removeDataset("random")
+            return expect(result).to.eventually.be.rejectedWith(NotFoundError);
+        });
+
+        it ("should successfully remove a dataset that is already added", function() {
+            return facade.addDataset("ab", sections, InsightDatasetKind.Sections)
+                .then((result) => {
+                    expect(result).to.deep.equal(["ab"]);
+                    return facade.removeDataset("ab");
+                })
+                .then((res) => {
+                    expect(res).to.deep.equal([]);
+                })
+                .catch((error) => {
+                    expect.fail("should have accepted!")
+                });
+        });
+
     });
 });
