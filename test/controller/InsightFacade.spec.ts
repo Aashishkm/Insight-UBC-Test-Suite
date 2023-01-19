@@ -183,12 +183,17 @@ describe("InsightFacade", function()  {
             clearDisk()
             facade = new InsightFacade();
 
+            let mini: string;
+            mini = getContentFromArchives("minipair.zip");
+
             const dataset1 = facade.addDataset("sections", sections, InsightDatasetKind.Sections)
             return expect(dataset1).to.eventually.deep.equal(["sections"])
 
             const dataset2 = facade.addDataset("sections2", sections, InsightDatasetKind.Sections)
             return expect(dataset2).to.eventually.deep.equal(["sections2"])
 
+            const dataset3 = facade.addDataset("sections3", mini, InsightDatasetKind.Sections)
+            return expect(dataset3).to.eventually.deep.equal(["sections3"])
         });
 
         type Error = "InsightError" | "ResultTooLargeError";
