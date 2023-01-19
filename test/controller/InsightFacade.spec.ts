@@ -221,7 +221,7 @@ describe("InsightFacade", function()  {
             }
         }
         function assertOnResult(actual: unknown, expected: Promise<InsightResult[]>): void {
-            expect(actual).to.deep.equal(expected);
+            expect(actual).to.eventually.deep.equal(expected);
         }
 
         function target(input: unknown): Promise<InsightResult[]> {
