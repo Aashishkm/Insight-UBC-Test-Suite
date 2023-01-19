@@ -1,7 +1,14 @@
 import InsightFacade from "../../src/controller/InsightFacade";
 import {clearDisk, getContentFromArchives} from "../resources/archives/TestUtil";
-import {InsightDatasetKind, InsightError, NotFoundError} from "../../src/controller/IInsightFacade";
+import {
+    InsightDatasetKind,
+    InsightError,
+    InsightResult,
+    NotFoundError,
+    ResultTooLargeError
+} from "../../src/controller/IInsightFacade";
 import chai, {expect} from "chai";
+import {folderTest} from "@ubccpsc310/folder-test";
 import chaiAsPromised = require("chai-as-promised");
 
 chai.use(chaiAsPromised);
@@ -11,12 +18,9 @@ describe("InsightFacade", function()  {
     let facade: InsightFacade;
 
     before(function() {
+        clearDisk()
+        facade = new InsightFacade();
         sections = getContentFromArchives("pair.zip");
-    });
-
-    beforeEach(function() {
-         clearDisk()
-         facade = new InsightFacade();
     });
 
     describe("addDataset", function() {
@@ -106,6 +110,11 @@ describe("InsightFacade", function()  {
     });
 
     describe("removeDataset", function() {
+        before(function() {
+            clearDisk()
+            facade = new InsightFacade();
+        });
+
         it ("should reject a dataset id that is empty", function() {
             const result = facade.removeDataset("")
             return expect(result).to.eventually.be.rejectedWith(InsightError);
@@ -145,6 +154,12 @@ describe("InsightFacade", function()  {
     });
 
     describe("listDataset", function() {
+
+        before(function() {
+            clearDisk()
+            facade = new InsightFacade();
+        });
+
         it("should list an empty dataset", async function() {
             const dataset = await facade.listDatasets()
             expect(dataset).to.deep.equal([])
@@ -159,5 +174,57 @@ describe("InsightFacade", function()  {
 
             expect(dataset).to.deep.equal([{id: "ab", kind: InsightDatasetKind.Sections, numRows: 64612}])
         });
+    });
+
+    describe("performQuery", function() {
+
+        before(function() {
+
+            clearDisk()
+            facade = new InsightFacade();
+
+            const dataset1 = facade.addDataset("sections", sections, InsightDatasetKind.Sections)
+            return expect(dataset1).to.eventually.deep.equal(["sections"])
+
+            const dataset2 = facade.addDataset("sections2", sections, InsightDatasetKind.Sections)
+            return expect(dataset2).to.eventually.deep.equal(["sections2"])
+
+        });
+
+        type Error = "InsightError" | "ResultTooLargeError";
+
+        function errorValidator(error: any): error is Error {
+            return error === "InsightError" || error === "ResultTooLargeError"
+        }
+
+        function assertOnError(actual: any, expected: Error): void {
+            if (expected === "InsightError") {
+                expect(actual).to.be.instanceof(InsightError);
+            } else if (expected === "ResultTooLargeError") {
+                expect(actual).to.be.instanceof(ResultTooLargeError);
+            } else {
+                // this should be unreachable
+                expect.fail("UNEXPECTED ERROR");
+            }
+        }
+        function assertOnResult(actual: unknown, expected: Promise<InsightResult[]>): void {
+            expect(actual).to.equal(expected);
+        }
+
+        function target(input: unknown): Promise<InsightResult[]> {
+            return facade.performQuery(input);
+        }
+
+        folderTest<unknown, Promise<InsightResult[]>, Error>(
+            "Dynamic Tests Perform Query",
+            target,
+            "./test/resources/queries",
+            {
+                errorValidator,
+                assertOnError,
+                assertOnResult
+            }
+        )
+
     });
 });
