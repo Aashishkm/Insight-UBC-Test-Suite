@@ -83,11 +83,19 @@ describe("InsightFacade", function()  {
             return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
 
+        it("should accept a dataset with empptydatainsections", function() {
+            let ultra: string;
+            ultra = getContentFromArchives("ultramini.zip");
+
+            const result = facade.addDataset("nodata", ultra, InsightDatasetKind.Sections)
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
         it("should reject a dataset with no sections", function() {
             let nosections: string;
             nosections = getContentFromArchives("Nosections.zip");
             const result = facade.addDataset("nosections", nosections, InsightDatasetKind.Sections)
-            return expect(result).to.eventually.be.rejectedWith(InsightError);
+            return expect(result).to.eventually.deep.equal(["nosections"]);
         });
 
 
