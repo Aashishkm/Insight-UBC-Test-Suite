@@ -83,7 +83,7 @@ describe("InsightFacade", function()  {
             return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
 
-        it("should accept a dataset with empptydatainsections", function() {
+        it("should accept a dataset with emppty datain sections", function() {
             let ultra: string;
             ultra = getContentFromArchives("ultramini.zip");
 
@@ -95,7 +95,7 @@ describe("InsightFacade", function()  {
             let nosections: string;
             nosections = getContentFromArchives("Nosections.zip");
             const result = facade.addDataset("nosections", nosections, InsightDatasetKind.Sections)
-            return expect(result).to.eventually.deep.equal(["nosections"]);
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
 
 
@@ -221,7 +221,7 @@ describe("InsightFacade", function()  {
             }
         }
         function assertOnResult(actual: unknown, expected: Promise<InsightResult[]>): void {
-            expect(actual).to.equal(expected);
+            expect(actual).to.deep.equal(expected);
         }
 
         function target(input: unknown): Promise<InsightResult[]> {
