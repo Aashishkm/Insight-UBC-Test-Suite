@@ -18,12 +18,15 @@ describe("InsightFacade", function()  {
     let facade: InsightFacade;
 
     before(function() {
-        clearDisk()
-        facade = new InsightFacade();
+
         sections = getContentFromArchives("pair.zip");
     });
 
     describe("addDataset", function() {
+        beforeEach(function() {
+            clearDisk()
+            facade = new InsightFacade();
+        });
 
         it ("should reject with  an empty dataset id", function() {
             const result = facade.addDataset("", sections, InsightDatasetKind.Sections)
@@ -83,12 +86,28 @@ describe("InsightFacade", function()  {
             return expect(result).to.eventually.be.rejectedWith(InsightError);
         });
 
-        it("should accept a dataset with emppty datain sections", function() {
+        it("should accept a dataset with no courses direcotry and emppty datain sections", function() {
             let ultra: string;
             ultra = getContentFromArchives("ultramini.zip");
 
             const result = facade.addDataset("nodata", ultra, InsightDatasetKind.Sections)
             return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
+        it("should accept a dataset with no courses direcotry and emppty datain sections", function() {
+            let ultra: string;
+            ultra = getContentFromArchives("ultramini.zip");
+
+            const result = facade.addDataset("nodata", ultra, InsightDatasetKind.Sections)
+            return expect(result).to.eventually.be.rejectedWith(InsightError);
+        });
+
+        it("should accept a dataset with emppty datain sections", function() {
+            let emptysection: string;
+            emptysection = getContentFromArchives("emptystringsection.zip");
+
+            const result = facade.addDataset("nodata", emptysection, InsightDatasetKind.Sections)
+            return expect(result).to.eventually.deep.equal(["nodata"]);
         });
 
         it("should reject a dataset with no sections", function() {
@@ -104,10 +123,6 @@ describe("InsightFacade", function()  {
                 .then((result) => {
                     //result should be the name of the id
                     expect(result).to.deep.equal(["testing"]);
-                    //should be an array
-                    expect(result).to.be.an.instanceof(Array);
-                    //length should be 1 (only added 1 dataset)
-                    expect(result.length).to.equal(1);
                     })
                 .catch((error) => {
                     expect.fail("shouldn't end up here")
@@ -118,7 +133,7 @@ describe("InsightFacade", function()  {
     });
 
     describe("removeDataset", function() {
-        before(function() {
+        beforeEach(function() {
             clearDisk()
             facade = new InsightFacade();
         });
@@ -163,7 +178,7 @@ describe("InsightFacade", function()  {
 
     describe("listDataset", function() {
 
-        before(function() {
+        beforeEach(function() {
             clearDisk()
             facade = new InsightFacade();
         });
@@ -221,7 +236,13 @@ describe("InsightFacade", function()  {
             }
         }
         function assertOnResult(actual: unknown, expected: Promise<InsightResult[]>): void {
-            expect(actual).to.eventually.deep.equal(expected);
+
+            expect(actual).to.deep.equal(expected);
+
+            //expect(actual).to.have.members(expected);
+            //expect(actual).to.have.length(expected.length);
+            //check if they have the same members
+            //check there length
         }
 
         function target(input: unknown): Promise<InsightResult[]> {
